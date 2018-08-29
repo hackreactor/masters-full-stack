@@ -2,7 +2,11 @@ var express = require('./express.js');
 
 var app = express();
 
-app.get('/', function (req, res, next){ next(); }, function (req, res) {
+// app.get('/', function (req, res) {
+// 	res.send('Hello World!');
+// });
+
+app.get('/', function (req, res, next){ res.status(201); next(); }, function (req, res) {
 	res.send('Hello World!');
 });
 

@@ -4,22 +4,40 @@
 // recieve information (bodyParser)
 // http.Server(pass our app object in)
 
+// TODO for next week: be able to handle line 9 line index.js (aka middleware!!!!)
+
 var http = require('http');
+var res = require('./response');
 
 module.exports = function(){
-	var app = {};
-
 	var handlerArray = [];
 
-	/*
-	{
-		route: '/',
-		methods: [
-			function (req, res, next){ next(); },
-			function (req, res) { res.send('Hello World!'); }
-		]
-	}
-	*/
+	var app = function (request, response) {
+
+		Object.setPrototypeOf(response, res);
+
+		var conveyer = function (i) {
+			if(handlerArray[i].route === request.url && handlerArray[i].type === request.method) { 
+				var x = 0;
+
+				var next = function () {
+					x++;
+					if(x >= handlerArray[i].methods.length) {
+						conveyer(++i);
+					} else {
+						handlerArray[i].methods[x](request, response, next);
+					}
+				};
+
+				handlerArray[i].methods[x](request, response, next);
+			} else if(i < handlerArray.length - 1) {
+				conveyer(++i);
+			} else {
+				response.status(404).send('404 ERROR');
+			}
+		};
+		conveyer(0);
+	};
 
 	app.use = function (...rest) {
 		if(typeof rest[0] === 'function') {
@@ -56,27 +74,7 @@ module.exports = function(){
 	};
 
 	app.listen = function (port) {
-		var server = http.createServer(function (request, response) {
-			var conveyer = function (i=0) {
-				if(handlerArray[i].route === request.url && handlerArray[i].type === request.type) { //TODO: make sure url is in format that we like
-					var x = 0;
-
-					var next = function () {
-						x++;
-						if(x >= handlerArray.[i].methods.length) {
-							conveyer(++i);
-						} else {
-							handlerArray[i].methods[x](request, response, next);
-						}
-					};
-
-					handlerArray[i].methods[x](request, response, next);
-				} else {
-					conveyer(++i);
-				}
-			};
-			conveyer(0);
-		});
+		var server = http.createServer(app);
 		server.listen(port);
 	};
 
