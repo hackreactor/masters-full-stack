@@ -18,8 +18,8 @@ module.exports = function(){
 		Object.setPrototypeOf(response, res);
 
 		var conveyer = function (i) {
-			if(handlerArray[i].route === request.url && handlerArray[i].type === request.method) { 
-				var x = 0;
+			if((handlerArray[i].route === request.url || handlerArray[i].route === '*') && (handlerArray[i].type === request.method || handlerArray[i].type === '*')) { 
+        var x = 0;
 
 				var next = function () {
 					x++;
