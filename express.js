@@ -4,7 +4,8 @@
 // recieve information (bodyParser)
 // http.Server(pass our app object in)
 
-// TODO for next week: be able to handle line 9 line index.js (aka middleware!!!!)
+// TODO for next week: bodyParser, morgan, staticFiles
+// Continuing on: dbs, front-end
 
 var http = require('http');
 var res = require('./response');
